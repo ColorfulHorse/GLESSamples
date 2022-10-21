@@ -10,7 +10,7 @@ int arrayLen(T &array) {
     return (sizeof(array) / sizeof(array[0]));
 }
 
-const char* cls_bridge = "com/greensun/glsample/RenderContext";
+const char *cls_bridge = "com/greensun/glsample/RenderContext";
 
 void set_assets_manager(JNIEnv *env, jclass cls, jobject assetManager) {
     auto manager = AAssetManager_fromJava(env, assetManager);
@@ -25,13 +25,8 @@ void context_release(JNIEnv *env, jclass cls) {
 
 
 JNINativeMethod methods[] = {
-    {"setAssetManager",  "(Landroid/content/res/AssetManager;)V", (void *) set_assets_manager},
-    {"nativeRelease",  "()V", (void *) context_release},
-//        {"setCallBack",  "(Lcom/lyj/learnffmpeg/PublishCallBack;)V", (void *) publisher_set_callback},
-//        {"release",      "()V",                                      (void *) publisher_release},
-//        {"startPublish", "(Ljava/lang/String;III)I",                 (void *) publisher_start_publish},
-//        {"stopPublish",  "()I",                                      (void *) publisher_stop_publish},
-//        {"publishData",  "([B)I",                                    (void *) publisher_publish_data}
+        {"setAssetManager", "(Landroid/content/res/AssetManager;)V", (void *) set_assets_manager},
+        {"nativeRelease",   "()V",                                   (void *) context_release},
 };
 
 
