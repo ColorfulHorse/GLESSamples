@@ -9,7 +9,6 @@ set(CXX_STANDARD 11)
 
 project("glsample")
 
-include_directories(${PROJECT_SOURCE_DIR}/configuration)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SRC_LIST "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*.c")

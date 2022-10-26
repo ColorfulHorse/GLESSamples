@@ -23,6 +23,7 @@ class BaseRenderer(val type: Int, private val surfaceView: MyGLSurfaceView): GLS
         const val RENDER_TYPE = 100
         const val RENDER_TRIANGLE = RENDER_TYPE + 1
         const val RENDER_RIPPLE = RENDER_TYPE + 2
+        const val RENDER_HEART = RENDER_TYPE + 3
     }
 
     init {
