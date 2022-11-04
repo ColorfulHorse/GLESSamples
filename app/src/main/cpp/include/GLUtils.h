@@ -15,7 +15,15 @@ public:
 
     static uint32_t loadAssetsTexture(const char *path, GLint repeatMode = -1,
                                       bool gamma = false);
-
+    /**
+     * 从assets加载纹理资源
+     * @param path
+     * @param width
+     * @param height
+     * @param repeatMode
+     * @param gamma
+     * @return
+     */
     static uint32_t loadAssetsTexture(const char *path, int *width, int *height, GLint repeatMode = -1,
                                       bool gamma = false);
 
