@@ -17,7 +17,7 @@ import com.greensun.glsample.render.BaseRenderer
 
 class EntranceFragment : Fragment() {
 
-    val mViewBinding by viewBinding<FragmentEntranceBinding>()
+    private val mViewBinding by viewBinding<FragmentEntranceBinding>()
 
     val data = listOf(
         "三角形" to BaseRenderer.RENDER_TRIANGLE,

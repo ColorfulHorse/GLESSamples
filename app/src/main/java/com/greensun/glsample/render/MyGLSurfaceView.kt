@@ -45,6 +45,9 @@ class MyGLSurfaceView(context: Context?, attrs: AttributeSet?) : GLSurfaceView(c
         }
     }
 
+    /**
+     * 重设surfaceView尺寸
+     */
     fun resetSurfaceSize(width: Int, height: Int) {
         post {
             mRatioWidth = width

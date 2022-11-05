@@ -23,6 +23,7 @@ protected:
     uint32_t VAO, VBO;
     int surfaceWidth, surfaceHeight;
 public:
+    // 存一个
     jobject javaRef;
     virtual void onSurfaceCreated() = 0;
     virtual void onSurfaceChanged(int width, int height) {

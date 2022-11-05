@@ -13,6 +13,7 @@ int arrayLen(T &array) {
 const char *cls_bridge = "com/greensun/glsample/RenderContext";
 
 void set_assets_manager(JNIEnv *env, jclass cls, jobject assetManager) {
+    // 获取native AAssetManager
     auto manager = AAssetManager_fromJava(env, assetManager);
     RenderContext::instance()->assetManager = manager;
     env->GetJavaVM(&RenderContext::instance()->jvm);

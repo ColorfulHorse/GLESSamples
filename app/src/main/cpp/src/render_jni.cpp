@@ -6,6 +6,12 @@
 
 const char* renderClassName = "com/greensun/glsample/render/BaseRenderer";
 
+/**
+ * 从java对象存的地址获取native实例
+ * @param env
+ * @param obj
+ * @return
+ */
 Renderer* getRenderer(JNIEnv *env, jobject obj) {
     jlong addr = env->GetLongField(obj, RenderContext::instance()->renderClsInfo.ptr);
     jint type = env->GetIntField(obj, RenderContext::instance()->renderClsInfo.type);
@@ -24,6 +30,11 @@ Renderer* getRenderer(JNIEnv *env, jobject obj) {
     return renderer;
 }
 
+/**
+ * 根据类型创建不同renderer
+ * @param type
+ * @return
+ */
 Renderer* createRenderer(jint type) {
     Renderer* renderer = nullptr;
     switch (type) {
@@ -48,6 +59,7 @@ extern "C" {
 
 JNIEXPORT void JNICALL
 Java_com_greensun_glsample_render_BaseRenderer_00024Companion_nativeInit(JNIEnv *env, jobject thiz) {
+    // 保存类信息方便之后反射
     jclass localClass = env->FindClass(renderClassName);
     jclass renderCls = reinterpret_cast<jclass>(env->NewGlobalRef(localClass));
     jfieldID renderPtr = env->GetFieldID(renderCls, "mNativePtr", "J");

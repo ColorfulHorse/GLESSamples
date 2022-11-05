@@ -6,7 +6,6 @@
 #define GLSAMPLE_ASSETUTIL_H
 
 #include <android/asset_manager.h>
-#include <android/bitmap.h>
 #include "RenderContext.h"
 #include "logger.h"
 #include "stb_image.h"
