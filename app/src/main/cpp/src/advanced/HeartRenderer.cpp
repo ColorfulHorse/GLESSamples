@@ -5,8 +5,6 @@
 #include <glm/glm.hpp>
 #include <chrono>
 #include "core/advanced/HeartRenderer.h"
-#include "GLUtils.h"
-
 
 void HeartRenderer::onSurfaceCreated() {
     shader = Shader("shader/heart/heart.vert", "shader/heart/heart.frag");
@@ -36,9 +34,8 @@ void HeartRenderer::onDraw() {
     using namespace std::chrono;
     auto t = system_clock::now();
     auto tt = duration_cast<duration<long long, std::ratio<1, 1000>>>(t.time_since_epoch()).count();
-    auto delta = static_cast<float>(fmod(tt, 2000) / 2000);
-//    LOGE("HeartRenderer", "time: %lld", tt);
-//    LOGE("HeartRenderer", "delta: %f", delta);
+    // 2秒为一个动画周期
+    auto delta = static_cast<float>(fmod(tt, 1000) / 1000);
     shader.setVec2("layerSize", glm::vec2(surfaceWidth, surfaceHeight));
     shader.setFloat("delta", delta);
     glClear(GL_COLOR_BUFFER_BIT);

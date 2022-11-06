@@ -5,6 +5,8 @@ out vec4 fragColor;
 uniform vec2 layerSize;
 uniform float delta;
 
+const float PI = 3.141593;
+
 void main() {
     // 坐标转换，转换为以短轴长度为基准，以中心点为原点的相对坐标
     // (xy - wh/2) / (短轴/2) =>（2xy - wh）/ 短轴
@@ -17,14 +19,18 @@ void main() {
     // 观察一下这个动画，类似一个横向的挤压回弹效果
     // 那么我们需要在x方向上向内偏移，y方向上向外偏移
     // 另外需要这个偏移量遵循一个周期性的非线性变化
-    float ss = pow(delta, .2) * 0.5 + 0.5;
-    ss = 1.0 + ss * 0.5 * sin(delta * 6.2831 * 3.0 -uv.y * 0.5) * exp(-delta * 4.0);
-    uv *= (vec2(0.5, 1.5) + ss * vec2(0.5, -0.5));
+//    float ss = pow(delta, .2) * 0.5 + 0.5;
+//    ss = 1.0 + ss * 0.5 * sin(delta * 6.2831 * 3.0 -uv.y * 0.5) * exp(-delta * 4.0);
+//    uv *= (vec2(0.5, 1.5) + ss * vec2(0.5, -0.5));
 
-//    uv.y += 0.25;
+    // heart beats
+    float ss = (1.0 - 0.3/(delta + 0.3));
+    uv *= 0.85 + ss * 0.15;
+
+    uv.y += 0.25;
     // 片段坐标所在角的弧度，同一个方向上的片段atan值相同
     // atan2(x, y) [-PI,PI] => [-1, 1]
-    float a = atan(uv.x, -uv.y) / 3.141593;
+    float a = atan(uv.x, -uv.y) / PI;
     float h = abs(a);
     float r = length(uv);
     // 让形状看起来更接近爱心
@@ -38,12 +44,12 @@ void main() {
     s *= 0.5 + 0.5 * pow(1.0 - clamp(r / d, 0.0, 1.0), 0.1);
     vec3 hcol = vec3(1.0, 0.4 * r, 0.3) * s;
 
-    // r - d 的含义，已知相同方向的直线上h相同，那么r < d说明该片段在爱心内部，应该使用爱心的颜色
-    // r - d在[-0.01, 0.01]区间内表示该片段在爱心边缘，做一个边缘平滑
+    // d - r 的含义，已知相同方向的直线上d相同，那么r < d说明该片段在爱心内部，应该使用爱心的颜色
+    // d - r在[-0.01, 0.01]区间内表示该片段在爱心边缘，做一个边缘平滑
     // smoothstep平滑过渡
     // t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
     // smoothstep(edge0, edge1, x) = (3.0 - 2.0 * t) * t * t;
 //    vec3 col = r < d ? hcol : bgColor;
-    vec3 col = mix(bgColor, hcol, smoothstep(0.01, -0.01, r - d));
+    vec3 col = mix(bgColor, hcol, smoothstep(-0.01, 0.01, d - r));
     fragColor = vec4(col, 1.0);
 }
