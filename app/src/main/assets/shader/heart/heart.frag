@@ -38,12 +38,12 @@ void main() {
     s *= 0.5 + 0.5 * pow(1.0 - clamp(r / d, 0.0, 1.0), 0.1);
     vec3 hcol = vec3(1.0, 0.4 * r, 0.3) * s;
 
-    // h-r 的含义，已知相同方向的直线上h相同，那么r < h说明该片段在爱心内部，应该使用爱心的颜色
-    // h-r在[-0.01, 0.01]区间内表示该片段在爱心边缘，做一个边缘平滑
+    // r - d 的含义，已知相同方向的直线上h相同，那么r < d说明该片段在爱心内部，应该使用爱心的颜色
+    // r - d在[-0.01, 0.01]区间内表示该片段在爱心边缘，做一个边缘平滑
     // smoothstep平滑过渡
     // t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
     // smoothstep(edge0, edge1, x) = (3.0 - 2.0 * t) * t * t;
 //    vec3 col = r < d ? hcol : bgColor;
-    vec3 col = mix(bgColor, hcol, smoothstep(-0.01, 0.01, d - r));
+    vec3 col = mix(bgColor, hcol, smoothstep(0.01, -0.01, r - d));
     fragColor = vec4(col, 1.0);
 }

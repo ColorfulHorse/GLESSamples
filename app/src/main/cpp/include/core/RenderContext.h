@@ -6,6 +6,7 @@
 #define GLSAMPLE_RENDERCONTEXT_H
 
 #include <android/asset_manager.h>
+#include <jni.h>
 
 class RenderContext {
 private:
