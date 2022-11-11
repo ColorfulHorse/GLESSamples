@@ -15,9 +15,14 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+
         externalNativeBuild {
             cmake {
-                cppFlags '-std=c++11'
+                cppFlags "-std=c++11"
+                abiFilters "armeabi-v7a"
             }
         }
     }

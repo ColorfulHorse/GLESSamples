@@ -27,10 +27,12 @@ find_library(
         log)
 
 #find_library(gl-lib GLESv3)
+#find_library(freetype-lib freetype)
 
 target_link_libraries(
         glsample
         ${log-lib}
         -lGLESv3
+        -lfreetype
         -landroid
 )
