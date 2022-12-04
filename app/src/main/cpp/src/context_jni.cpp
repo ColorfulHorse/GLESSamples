@@ -19,6 +19,10 @@ void set_assets_manager(JNIEnv *env, jclass cls, jobject assetManager) {
     env->GetJavaVM(&RenderContext::instance()->jvm);
 }
 
+void setScreenDensity() {
+
+}
+
 void context_release(JNIEnv *env, jclass cls) {
     auto context = RenderContext::instance();
     delete context;

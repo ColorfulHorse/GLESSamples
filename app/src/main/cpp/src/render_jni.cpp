@@ -2,6 +2,7 @@
 #include "core/basic/TriangleRenderer.h"
 #include "core/advanced/RippleRenderer.h"
 #include "core/advanced/HeartRenderer.h"
+#include "core/advanced/TextRenderer.h"
 #include "core/render_type.h"
 
 const char* renderClassName = "com/greensun/glsample/render/BaseRenderer";
@@ -26,6 +27,9 @@ Renderer* getRenderer(JNIEnv *env, jobject obj) {
         case RENDER_HEART:
             renderer = reinterpret_cast<HeartRenderer*>(addr);
             break;
+        case RENDER_TEXT:
+            renderer = reinterpret_cast<TextRenderer*>(addr);
+            break;
     }
     return renderer;
 }
@@ -46,6 +50,9 @@ Renderer* createRenderer(jint type) {
             break;
         case RENDER_HEART:
             renderer = new HeartRenderer();
+            break;
+        case RENDER_TEXT:
+            renderer = new TextRenderer();
             break;
     }
     return renderer;

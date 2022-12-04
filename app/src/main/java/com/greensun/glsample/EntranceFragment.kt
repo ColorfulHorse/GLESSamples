@@ -22,7 +22,8 @@ class EntranceFragment : Fragment() {
     val data = listOf(
         "三角形" to BaseRenderer.RENDER_TRIANGLE,
         "水波纹" to BaseRenderer.RENDER_RIPPLE,
-        "爱心" to BaseRenderer.RENDER_HEART
+        "爱心" to BaseRenderer.RENDER_HEART,
+        "文字" to BaseRenderer.RENDER_TEXT
     )
 
     override fun onCreateView(

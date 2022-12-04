@@ -21,6 +21,7 @@ class Renderer {
 protected:
     Shader shader;
     uint32_t VAO, VBO;
+    uint32_t texture;
     int surfaceWidth, surfaceHeight;
 public:
     // 存一个
