@@ -9,6 +9,8 @@ set(CXX_STANDARD 11)
 
 project("glsample")
 
+set(LIBS_DIR "${CMAKE_SOURCE_DIR}/../jniLibs")
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SRC_LIST "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*.c")
@@ -26,13 +28,15 @@ find_library(
         log-lib
         log)
 
-#find_library(gl-lib GLESv3)
-#find_library(freetype-lib freetype)
+add_library(freetype SHARED IMPORTED)
+set_target_properties(freetype
+        PROPERTIES IMPORTED_LOCATION
+        ${LIBS_DIR}/${ANDROID_ABI}/libfreetype.so)
 
 target_link_libraries(
         glsample
         ${log-lib}
         -lGLESv3
-        -lfreetype
+        freetype
         -landroid
 )
