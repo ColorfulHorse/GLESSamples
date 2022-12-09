@@ -6,6 +6,7 @@
 #include <chrono>
 #include "core/advanced/TextRenderer.h"
 #include "GLUtils.h"
+#include <sstream>
 
 
 void TextRenderer::onSurfaceCreated() {
@@ -21,13 +22,11 @@ void TextRenderer::onSurfaceCreated() {
         LOGE(TAG, "init ft face error");
         return;
     }
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     loadText(U"这个是文字");
-    FT_Done_Face(ftFace);
-    FT_Done_FreeType(ftLibrary);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     shader = Shader("shader/text/text.vert", "shader/text/text.frag");
 
 
@@ -43,9 +42,12 @@ void TextRenderer::onSurfaceCreated() {
     glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * sizeof(float), (void *) (2 * sizeof(float)));
 
     shader.use();
-    shader.setInt("textTexture", 0);
+    shader.setInt("mTexture", 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    FT_Done_Face(ftFace);
+    FT_Done_FreeType(ftLibrary);
 }
 
 void TextRenderer::loadText(const std::u32string &text) {
@@ -60,33 +62,68 @@ void TextRenderer::loadText(const std::u32string &text) {
 
 //    FT_UInt glyphIndex = FT_Get_Char_Index(ftFace, 0x3002);
 //    FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT);
-        FT_Error ret = FT_Load_Char(ftFace, *iter, FT_LOAD_DEFAULT);
+        FT_Error ret = FT_Load_Char(ftFace, 0x6211, FT_LOAD_DEFAULT);
         if (ret != FT_Err_Ok) {
             LOGE(TAG, "load char error");
             return;
         }
-        // 默认渲染为8bit 256灰度bitmap
-        FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL);
+        // 默认渲染为8bit 255灰度bitmap
+        ret = FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL);
+        if (ret != FT_Err_Ok) {
+            LOGE(TAG, "render char error");
+            return;
+        }
         GLuint textureId;
         glGenTextures(1, &textureId);
         glBindTexture(GL_TEXTURE_2D, textureId);
         // 根据图片创建纹理
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
-                     ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows,
-                     0, GL_RED, GL_UNSIGNED_BYTE,
-                     ftFace->glyph->bitmap.buffer);
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_RED,
+                     ftFace->glyph->bitmap.width,
+                     ftFace->glyph->bitmap.rows,
+                     0,
+                     GL_RED,
+                     GL_UNSIGNED_BYTE,
+                     ftFace->glyph->bitmap.buffer
+                     );
+        unsigned char* buffer = ftFace->glyph->bitmap.buffer;
+        int width = ftFace->glyph->bitmap.width;
+        int rows = ftFace->glyph->bitmap.rows;
+        for (int i = 0; i < rows; ++i) {
+            std::stringstream ss;
+            for (int j = 0; j < width; ++j) {
+                int offset = i * width + j;
+                auto c = *(buffer + offset);
+                if (c > 0) {
+                    ss << "0";
+                } else {
+                    ss << " ";
+                }
+            }
+            LOGI(TAG, "%s", ss.str().c_str());
+        }
         // 创建多级渐远纹理
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        characters.emplace_back(
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        int ww, hh;
+//        textureId = GLUtils::loadAssetsTexture("texture/sight.jpeg", &ww, &hh, GL_CLAMP_TO_EDGE);
+        Character ch {
                 textureId,
                 glm::ivec2(ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows),
                 glm::ivec2(ftFace->glyph->bitmap_left, ftFace->glyph->bitmap_top),
                 ftFace->glyph->advance.x
-                );
+        };
+        characters.push_back(ch);
+//        characters.emplace_back(
+//                textureId,
+//                glm::ivec2(ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows),
+//                glm::ivec2(ftFace->glyph->bitmap_left, ftFace->glyph->bitmap_top),
+//                ftFace->glyph->advance.x
+//        );
     }
 }
 
@@ -97,7 +134,7 @@ void TextRenderer::onDraw() {
 }
 
 void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
-    shader.use();
+//    shader.use();
     shader.setVec3("textColor", color);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(surfaceWidth), 0.0f, static_cast<float>(surfaceHeight));
     shader.setMat4("projection", projection);
@@ -106,33 +143,33 @@ void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 col
     for (auto iter = characters.cbegin(); iter != characters.cend(); ++iter) {
         Character c = *iter;
         // 字体框左下角
-        GLfloat left = x + c.bearing.x * scale;
-        GLfloat bottom = y - (c.size.y - c.bearing.y) * scale;
-        GLfloat right = c.size.x * scale + left;
-        GLfloat top = c.size.y * scale + bottom;
-        float vertices[] = {
-                left, bottom, 0.0f, 0.0f,
-                right, top, 1.0f, 1.0f,
-                left, top, 0.0f, 1.0f,
-                left, bottom, 0.0f, 0.0f,
-                right, bottom, 1.0f, 0.0f,
-                right, top, 1.0f, 1.0f,
-        };
-
-//        GLfloat xpos = x + c.bearing.x * scale;
-//        GLfloat ypos = y - (c.size.y - c.bearing.y) * scale;
-//        GLfloat w = c.size.x * scale;
-//        GLfloat h = c.size.y * scale;
-//        // Update VBO for each character
-//        GLfloat vertices[] = {
-//                 xpos,     ypos + h,   0.0, 0.0 ,
-//                 xpos,     ypos,       0.0, 1.0 ,
-//                 xpos + w, ypos,       1.0, 1.0 ,
-//
-//                 xpos,     ypos + h,   0.0, 0.0 ,
-//                 xpos + w, ypos,       1.0, 1.0 ,
-//                 xpos + w, ypos + h,   1.0, 0.0
+//        GLfloat left = x + c.bearing.x * scale;
+//        GLfloat bottom = y - (c.size.y - c.bearing.y) * scale;
+//        GLfloat right = c.size.x * scale + left;
+//        GLfloat top = c.size.y * scale + bottom;
+//        float vertices[] = {
+//                left, bottom, 0.0f, 0.0f,
+//                right, top, 1.0f, 1.0f,
+//                left, top, 0.0f, 1.0f,
+//                left, bottom, 0.0f, 0.0f,
+//                right, bottom, 1.0f, 0.0f,
+//                right, top, 1.0f, 1.0f,
 //        };
+
+        GLfloat xpos = x + c.bearing.x * scale;
+        GLfloat ypos = y - (c.size.y - c.bearing.y) * scale;
+        GLfloat w = c.size.x * scale;
+        GLfloat h = c.size.y * scale;
+        // Update VBO for each character
+        GLfloat vertices[] = {
+                 xpos,     ypos + h,   0.0, 0.0 ,
+                 xpos,     ypos,       0.0, 1.0 ,
+                 xpos + w, ypos,       1.0, 1.0 ,
+
+                 xpos,     ypos + h,   0.0, 0.0 ,
+                 xpos + w, ypos,       1.0, 1.0 ,
+                 xpos + w, ypos + h,   1.0, 0.0
+        };
 
         glBindTexture(GL_TEXTURE_2D, c.textureId);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
