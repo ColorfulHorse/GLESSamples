@@ -25,9 +25,9 @@ struct Character {
 class TextRenderer : public Renderer {
     virtual void onSurfaceCreated() override;
 
-    virtual void onDraw() override;
+    virtual void onSurfaceDestroyed() override;
 
-    virtual ~TextRenderer();
+    virtual void onDraw() override;
 
 private:
     const char* TAG = "TextRenderer";

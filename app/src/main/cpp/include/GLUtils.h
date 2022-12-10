@@ -9,11 +9,11 @@
 
 class GLUtils {
 public:
-    static uint32_t loadTextureFromPath(const char *path, GLint repeatMode = -1, bool gamma = false);
+    static GLuint loadTextureFromPath(const char *path, GLint repeatMode = -1, bool gamma = false);
 
-    static uint32_t textureFromDict(const char *filename, const std::string &directory);
+    static GLuint textureFromDict(const char *filename, const std::string &directory);
 
-    static uint32_t loadAssetsTexture(const char *path, GLint repeatMode = -1,
+    static GLuint loadAssetsTexture(const char *path, GLint repeatMode = -1,
                                       bool gamma = false);
     /**
      * 从assets加载纹理资源
@@ -24,15 +24,15 @@ public:
      * @param gamma
      * @return
      */
-    static uint32_t loadAssetsTexture(const char *path, int *width, int *height, GLint repeatMode = -1,
+    static GLuint loadAssetsTexture(const char *path, int *width, int *height, GLint repeatMode = -1,
                                       bool gamma = false);
 
-    static uint32_t loadCubeMap(std::vector<std::string> faces);
+    static GLuint loadCubeMap(std::vector<std::string> faces);
 
 
-    static uint32_t
-    loadTexture(const char *path, GLint repeatMode, bool gamma,
-                int width, int height, int channels, stbi_uc *data);
+    static GLuint
+    loadTexture(const char *path,
+                int width, int height, int channels, stbi_uc *data, GLint repeatMode = -1, bool gamma = false);
 };
 
 #endif

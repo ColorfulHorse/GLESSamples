@@ -100,6 +100,11 @@ Java_com_greensun_glsample_render_BaseRenderer_nativeOnSurfaceCreated(JNIEnv *en
 }
 
 JNIEXPORT void JNICALL
+Java_com_greensun_glsample_render_BaseRenderer_nativeOnSurfaceDestroyed(JNIEnv *env, jobject obj) {
+    getRenderer(env, obj)->onSurfaceDestroyed();
+}
+
+JNIEXPORT void JNICALL
 Java_com_greensun_glsample_render_BaseRenderer_nativeOnSurfaceChanged(JNIEnv *env, jobject obj, jint width, jint height) {
     getRenderer(env, obj)->onSurfaceChanged(width, height);
 }

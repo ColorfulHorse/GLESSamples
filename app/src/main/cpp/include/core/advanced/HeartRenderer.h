@@ -11,9 +11,9 @@
 class HeartRenderer : public Renderer {
     virtual void onSurfaceCreated() override;
 
-    virtual void onDraw() override;
+    virtual void onSurfaceDestroyed() override;
 
-    virtual ~HeartRenderer();
+    virtual void onDraw() override;
 
 private:
 };

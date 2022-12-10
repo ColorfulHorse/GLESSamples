@@ -1,7 +1,6 @@
 package com.greensun.glsample.render
 
 import android.opengl.GLSurfaceView
-import android.view.SurfaceView
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -43,7 +42,11 @@ class BaseRenderer(val type: Int, private val surfaceView: MyGLSurfaceView): GLS
         nativeOnDrawFrame()
     }
 
-    fun destroy() {
+    fun onPaused() {
+        nativeOnSurfaceDestroyed()
+    }
+
+    fun onDestroyed() {
         nativeDestroy()
     }
 
@@ -60,6 +63,8 @@ class BaseRenderer(val type: Int, private val surfaceView: MyGLSurfaceView): GLS
     private external fun nativeDestroy()
 
     private external fun nativeOnSurfaceCreated()
+
+    private external fun nativeOnSurfaceDestroyed()
 
     private external fun nativeOnSurfaceChanged(width: Int, height: Int)
 

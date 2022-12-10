@@ -61,7 +61,7 @@ void RippleRenderer::onTouch(float x, float y) {
     touchY = (surfaceHeight - y) / surfaceHeight;
 }
 
-RippleRenderer::~RippleRenderer() {
+void RippleRenderer::onSurfaceDestroyed() {
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(0, &VAO);
     glDeleteTextures(1, &texture);
