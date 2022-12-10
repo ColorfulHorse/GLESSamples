@@ -11,11 +11,11 @@
 class RippleRenderer : public Renderer {
     virtual void onSurfaceCreated() override;
 
-    virtual void onSurfaceDestroyed() override;
-
     virtual void onDraw() override;
 
     virtual void onTouch(float x, float y) override;
+
+    virtual ~RippleRenderer();
 
 private:
     float boundary = 0.1f;

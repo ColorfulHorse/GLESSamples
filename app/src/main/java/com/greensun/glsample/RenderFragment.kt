@@ -1,5 +1,6 @@
 package com.greensun.glsample
 
+import android.content.pm.ConfigurationInfo
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.glsample.databinding.FragmentRenderBinding
 import com.greensun.glsample.render.BaseRenderer
+import java.util.Properties
 
 class RenderFragment : Fragment() {
 
@@ -35,16 +37,16 @@ class RenderFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         viewBinding.glView.onResume()
     }
 
-    override fun onStop() {
-        renderer?.onPaused()
+    override fun onPause() {
+        super.onPause()
         viewBinding.glView.onPause()
-        super.onStop()
     }
+
 
     override fun onDestroy() {
         renderer?.onDestroyed()

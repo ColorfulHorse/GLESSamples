@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <GLES3/gl32.h>
+#include <GLES2/gl2.h>
 #include "stb_image.h"
 #include <cstdint>
 #include <iostream>

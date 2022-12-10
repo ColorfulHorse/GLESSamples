@@ -30,7 +30,7 @@ void TriangleRenderer::onDraw() {
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-void TriangleRenderer::onSurfaceDestroyed() {
+TriangleRenderer::~TriangleRenderer() {
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
 }

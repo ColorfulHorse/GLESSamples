@@ -51,6 +51,8 @@ void TextRenderer::onSurfaceCreated() {
 }
 
 void TextRenderer::loadText(const std::u32string &text) {
+    characters.clear();
+    FT_Set_Pixel_Sizes(ftFace, 96, 96);
     for (auto iter = text.cbegin(); iter != text.cend() ; ++iter) {
         //    FT_Set_Char_Size(
 //            ftFace,    /* handle to face object         */
@@ -58,7 +60,6 @@ void TextRenderer::loadText(const std::u32string &text) {
 //            16*64,   /* char_height in 1/64 of points */
 //            300,     /* horizontal device resolution  */
 //            300 );   /* vertical device resolution    */
-        FT_Set_Pixel_Sizes(ftFace, 96, 96);
 
 //    FT_UInt glyphIndex = FT_Get_Char_Index(ftFace, 0x3002);
 //    FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT);
@@ -89,29 +90,23 @@ void TextRenderer::loadText(const std::u32string &text) {
             }
             LOGI(TAG, "%s", ss.str().c_str());
         }
-//        int ww, hh;
-//        textureId = GLUtils::loadAssetsTexture("texture/sight.jpeg", &ww, &.
-        GLuint textureId = GLUtils::loadTexture(
-                "",
-                ftFace->glyph->bitmap.width,
-                ftFace->glyph->bitmap.rows,
-                1,
-                ftFace->glyph->bitmap.buffer,
-                GL_CLAMP_TO_EDGE
-                );
-        Character ch {
+        int ww, hh;
+        GLuint textureId = GLUtils::loadAssetsTexture("texture/test.jpeg", &ww, &hh, -1);
+//        GLuint textureId = GLUtils::loadTexture(
+//                "",
+//                ftFace->glyph->bitmap.width,
+//                ftFace->glyph->bitmap.rows,
+//                1,
+//                ftFace->glyph->bitmap.buffer,
+//                GL_CLAMP_TO_EDGE
+//                );
+        LOGE(TAG, "textureid %d", textureId);
+        characters.emplace_back(
                 textureId,
                 glm::ivec2(ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows),
                 glm::ivec2(ftFace->glyph->bitmap_left, ftFace->glyph->bitmap_top),
                 ftFace->glyph->advance.x
-        };
-        characters.push_back(ch);
-//        characters.emplace_back(
-//                textureId,
-//                glm::ivec2(ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows),
-//                glm::ivec2(ftFace->glyph->bitmap_left, ftFace->glyph->bitmap_top),
-//                ftFace->glyph->advance.x
-//        );
+        );
     }
 }
 
@@ -128,36 +123,37 @@ void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 col
     shader.setMat4("projection", projection);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
-    for (auto iter = characters.cbegin(); iter != characters.cend(); ++iter) {
+    for (auto iter = characters.begin(); iter != characters.end(); ++iter) {
         Character c = *iter;
         // 字体框左下角
-//        GLfloat left = x + c.bearing.x * scale;
-//        GLfloat bottom = y - (c.size.y - c.bearing.y) * scale;
-//        GLfloat right = c.size.x * scale + left;
-//        GLfloat top = c.size.y * scale + bottom;
-//        float vertices[] = {
-//                left, bottom, 0.0f, 0.0f,
-//                right, top, 1.0f, 1.0f,
-//                left, top, 0.0f, 1.0f,
-//                left, bottom, 0.0f, 0.0f,
-//                right, bottom, 1.0f, 0.0f,
-//                right, top, 1.0f, 1.0f,
-//        };
-
-        GLfloat xpos = x + c.bearing.x * scale;
-        GLfloat ypos = y - (c.size.y - c.bearing.y) * scale;
-        GLfloat w = c.size.x * scale;
-        GLfloat h = c.size.y * scale;
-        // Update VBO for each character
-        GLfloat vertices[] = {
-                 xpos,     ypos + h,   0.0, 0.0 ,
-                 xpos,     ypos,       0.0, 1.0 ,
-                 xpos + w, ypos,       1.0, 1.0 ,
-
-                 xpos,     ypos + h,   0.0, 0.0 ,
-                 xpos + w, ypos,       1.0, 1.0 ,
-                 xpos + w, ypos + h,   1.0, 0.0
+        GLfloat left = x + c.bearing.x * scale;
+        GLfloat bottom = y - (c.size.y - c.bearing.y) * scale;
+        GLfloat right = c.size.x * scale + left;
+        GLfloat top = c.size.y * scale + bottom;
+//        LOGE(TAG, "left %f  top %f  right %f  bottom %f", left, top, right, bottom);
+        float vertices[] = {
+                left, bottom, 0.0f, 0.0f,
+                right, top, 1.0f, 1.0f,
+                left, top, 0.0f, 1.0f,
+                left, bottom, 0.0f, 0.0f,
+                right, bottom, 1.0f, 0.0f,
+                right, top, 1.0f, 1.0f,
         };
+
+//        GLfloat xpos = x + c.bearing.x * scale;
+//        GLfloat ypos = y - (c.size.y - c.bearing.y) * scale;
+//        GLfloat w = c.size.x * scale;
+//        GLfloat h = c.size.y * scale;
+//        // Update VBO for each character
+//        GLfloat vertices[] = {
+//                 xpos,     ypos + h,   0.0, 0.0 ,
+//                 xpos,     ypos,       0.0, 1.0 ,
+//                 xpos + w, ypos,       1.0, 1.0 ,
+//
+//                 xpos,     ypos + h,   0.0, 0.0 ,
+//                 xpos + w, ypos,       1.0, 1.0 ,
+//                 xpos + w, ypos + h,   1.0, 0.0
+//        };
 
         glBindTexture(GL_TEXTURE_2D, c.textureId);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -171,10 +167,9 @@ void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 col
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void TextRenderer::onSurfaceDestroyed() {
-    characters.clear();
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(0, &VAO);
-    shader.release();
+TextRenderer::~TextRenderer() {
+//    glDeleteBuffers(1, &VBO);
+//    glDeleteVertexArrays(0, &VAO);
+//    shader.release();
 }
 
