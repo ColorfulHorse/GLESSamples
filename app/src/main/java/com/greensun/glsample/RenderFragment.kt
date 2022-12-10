@@ -41,13 +41,14 @@ class RenderFragment : Fragment() {
     }
 
     override fun onStop() {
-        super.onStop()
+        renderer?.onPaused()
         viewBinding.glView.onPause()
+        super.onStop()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        renderer?.destroy()
+        renderer?.onDestroyed()
         renderer = null
+        super.onDestroy()
     }
 }

@@ -47,10 +47,10 @@ void HeartRenderer::onDraw() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-
-HeartRenderer::~HeartRenderer() {
+void HeartRenderer::onSurfaceDestroyed() {
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(0, &VAO);
+    glDeleteTextures(1, &texture);
     shader.release();
 }
 

@@ -26,6 +26,7 @@ protected:
 public:
     jobject javaRef;
     virtual void onSurfaceCreated() = 0;
+    virtual void onSurfaceDestroyed() = 0;
     virtual void onSurfaceChanged(int width, int height) {
         glViewport(0, 0, width, height);
         surfaceWidth = width;

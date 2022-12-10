@@ -1,32 +1,32 @@
 #include "GLUtils.h"
 #include "core/AssetUtil.h"
 
- uint32_t GLUtils::loadTextureFromPath(const char *path, GLint repeatMode, bool gamma) {
+ GLuint GLUtils::loadTextureFromPath(const char *path, GLint repeatMode, bool gamma) {
 	int32_t width, height, channels;
 	stbi_uc *data = stbi_load(path, &width, &height, &channels, 0);
-	return loadTexture(path, repeatMode, gamma, width, height, channels, data);
+	return loadTexture(path, width, height, channels, data, repeatMode, gamma);
  }
 
-uint32_t GLUtils::loadAssetsTexture(const char *path, GLint repeatMode, bool gamma) {
+GLuint GLUtils::loadAssetsTexture(const char *path, GLint repeatMode, bool gamma) {
 	long len;
 	unsigned char* data = AssetUtil::loadAsset(path, &len);
 	int32_t width, height, channels;
 	stbi_uc *imgData = stbi_load_from_memory(data, len, &width, &height, &channels, 0);
-	return loadTexture(path, repeatMode, gamma, width, height, channels, imgData);
+	return loadTexture(path, width, height, channels, imgData, repeatMode, gamma);
 }
 
-uint32_t GLUtils::loadAssetsTexture(const char *path, int *width = nullptr, int *height = nullptr, GLint repeatMode, bool gamma) {
+GLuint GLUtils::loadAssetsTexture(const char *path, int *width, int *height, GLint repeatMode, bool gamma) {
 	long len;
 	unsigned char* data = AssetUtil::loadAsset(path, &len);
 	int32_t channels;
 	stbi_uc *imgData = stbi_load_from_memory(data, len, width, height, &channels, 0);
-	return loadTexture(path, repeatMode, gamma, *width, *height, channels, imgData);
+	return loadTexture(path, *width, *height, channels, imgData, repeatMode, gamma);
 }
 
-uint32_t
-GLUtils::loadTexture(const char *path, GLint repeatMode, bool gamma,
-					 int width, int height, int channels, stbi_uc *data) {
-	uint32_t textureId;
+GLuint
+GLUtils::loadTexture(const char *path,
+					 int width, int height, int channels, stbi_uc *data, GLint repeatMode, bool gamma) {
+	GLuint textureId;
 	glGenTextures(1, &textureId);
 	GLenum internalFormat;
 	GLenum dataFormat;
@@ -62,13 +62,13 @@ GLUtils::loadTexture(const char *path, GLint repeatMode, bool gamma,
 	return textureId;
 }
 
-uint32_t GLUtils::textureFromDict(const char *filename, const std::string &directory) {
+GLuint GLUtils::textureFromDict(const char *filename, const std::string &directory) {
 	std::string path = directory + '/' + filename;
 	return loadTextureFromPath(path.c_str(), GL_REPEAT);
 }
 
-uint32_t GLUtils::loadCubeMap(std::vector<std::string> faces) {
-	uint32_t textureId;
+GLuint GLUtils::loadCubeMap(std::vector<std::string> faces) {
+	GLuint textureId;
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
 	GLenum format;

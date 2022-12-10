@@ -25,6 +25,9 @@ void TextRenderer::onSurfaceCreated() {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     loadText(U"这个是文字");
 
+    FT_Done_Face(ftFace);
+    FT_Done_FreeType(ftLibrary);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader = Shader("shader/text/text.vert", "shader/text/text.frag");
@@ -45,9 +48,6 @@ void TextRenderer::onSurfaceCreated() {
     shader.setInt("mTexture", 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    FT_Done_Face(ftFace);
-    FT_Done_FreeType(ftLibrary);
 }
 
 void TextRenderer::loadText(const std::u32string &text) {
@@ -58,7 +58,7 @@ void TextRenderer::loadText(const std::u32string &text) {
 //            16*64,   /* char_height in 1/64 of points */
 //            300,     /* horizontal device resolution  */
 //            300 );   /* vertical device resolution    */
-        FT_Set_Pixel_Sizes(ftFace, 48, 0);
+        FT_Set_Pixel_Sizes(ftFace, 96, 96);
 
 //    FT_UInt glyphIndex = FT_Get_Char_Index(ftFace, 0x3002);
 //    FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT);
@@ -73,20 +73,6 @@ void TextRenderer::loadText(const std::u32string &text) {
             LOGE(TAG, "render char error");
             return;
         }
-        GLuint textureId;
-        glGenTextures(1, &textureId);
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        // 根据图片创建纹理
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     GL_RED,
-                     ftFace->glyph->bitmap.width,
-                     ftFace->glyph->bitmap.rows,
-                     0,
-                     GL_RED,
-                     GL_UNSIGNED_BYTE,
-                     ftFace->glyph->bitmap.buffer
-                     );
         unsigned char* buffer = ftFace->glyph->bitmap.buffer;
         int width = ftFace->glyph->bitmap.width;
         int rows = ftFace->glyph->bitmap.rows;
@@ -103,14 +89,16 @@ void TextRenderer::loadText(const std::u32string &text) {
             }
             LOGI(TAG, "%s", ss.str().c_str());
         }
-        // 创建多级渐远纹理
-        glGenerateMipmap(GL_TEXTURE_2D);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 //        int ww, hh;
-//        textureId = GLUtils::loadAssetsTexture("texture/sight.jpeg", &ww, &hh, GL_CLAMP_TO_EDGE);
+//        textureId = GLUtils::loadAssetsTexture("texture/sight.jpeg", &ww, &.
+        GLuint textureId = GLUtils::loadTexture(
+                "",
+                ftFace->glyph->bitmap.width,
+                ftFace->glyph->bitmap.rows,
+                1,
+                ftFace->glyph->bitmap.buffer,
+                GL_CLAMP_TO_EDGE
+                );
         Character ch {
                 textureId,
                 glm::ivec2(ftFace->glyph->bitmap.width, ftFace->glyph->bitmap.rows),
@@ -183,7 +171,8 @@ void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 col
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-TextRenderer::~TextRenderer() {
+void TextRenderer::onSurfaceDestroyed() {
+    characters.clear();
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(0, &VAO);
     shader.release();
