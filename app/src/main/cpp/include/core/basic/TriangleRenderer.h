@@ -9,8 +9,8 @@
 
 class TriangleRenderer : public Renderer {
     virtual void onSurfaceCreated() override;
-    virtual void onSurfaceDestroyed() override;
     virtual void onDraw() override;
+    virtual ~TriangleRenderer();
 };
 
 
