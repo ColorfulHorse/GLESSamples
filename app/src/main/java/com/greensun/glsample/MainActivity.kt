@@ -6,12 +6,6 @@ import com.example.glsample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        init {
-            System.loadLibrary("glsample")
-        }
-    }
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

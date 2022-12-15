@@ -22,8 +22,10 @@ void TextRenderer::onSurfaceCreated() {
         LOGE(TAG, "init ft face error");
         return;
     }
+
+    // 内存对齐设为1
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    loadText(L"这个是文字");
+    loadText(U"这个是文字wqeq123");
 
     FT_Done_Face(ftFace);
     FT_Done_FreeType(ftLibrary);
@@ -50,9 +52,10 @@ void TextRenderer::onSurfaceCreated() {
     glBindVertexArray(0);
 }
 
-void TextRenderer::loadText(const std::wstring &text) {
-    characters.clear();
-    FT_Set_Pixel_Sizes(ftFace, 96, 96);
+void TextRenderer::loadText(const std::u32string &text) {
+    std::vector<Character> vec;
+    characters.swap(vec);
+    FT_Set_Pixel_Sizes(ftFace, 50, 50);
     for (auto iter = text.cbegin(); iter != text.cend() ; ++iter) {
         //    FT_Set_Char_Size(
 //            ftFace,    /* handle to face object         */
@@ -68,37 +71,38 @@ void TextRenderer::loadText(const std::wstring &text) {
             LOGE(TAG, "load char error");
             return;
         }
+
         // 默认渲染为8bit 255灰度bitmap
         ret = FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL);
         if (ret != FT_Err_Ok) {
             LOGE(TAG, "render char error");
             return;
         }
-        unsigned char* buffer = ftFace->glyph->bitmap.buffer;
-        int width = ftFace->glyph->bitmap.width;
-        int rows = ftFace->glyph->bitmap.rows;
-        for (int i = 0; i < rows; ++i) {
-            std::stringstream ss;
-            for (int j = 0; j < width; ++j) {
-                int offset = i * width + j;
-                auto c = *(buffer + offset);
-                if (c > 0) {
-                    ss << "0";
-                } else {
-                    ss << " ";
-                }
-            }
-            LOGI(TAG, "%s", ss.str().c_str());
-        }
-        int ww, hh;
-//        GLuint textureId = GLUtils::loadAssetsTexture("texture/window.test.jpeg", &ww, &hh, -1, true);
-        GLuint textureId = GLUtils::loadTexture(
-                "",
-                ftFace->glyph->bitmap.width,
-                ftFace->glyph->bitmap.rows,
+//        unsigned char* buffer = ftFace->glyph->bitmap.buffer;
+//        int width = ftFace->glyph->bitmap.width;
+//        int rows = ftFace->glyph->bitmap.rows;
+//        for (int i = 0; i < rows; ++i) {
+//            std::stringstream ss;
+//            for (int j = 0; j < width; ++j) {
+//                int offset = i * width + j;
+//                auto c = *(buffer + offset);
+//                if (c > 0) {
+//                    ss << "0";
+//                } else {
+//                    ss << " ";
+//                }
+//            }
+//            LOGI(TAG, "%s", ss.str().c_str());
+//        }
+//        int ww, hh;
+//        GLuint textureId = GLUtils::loadAssetsTexture("texture/window.png", &ww, &hh, -1, true);
+        uint width = ftFace->glyph->bitmap.width;
+        uint height = ftFace->glyph->bitmap.rows;
+        GLuint textureId = GLUtils::loadMemoryTexture(
+                width,
+                height,
                 1,
-                ftFace->glyph->bitmap.buffer,
-                GL_CLAMP_TO_EDGE
+                ftFace->glyph->bitmap.buffer
                 );
         characters.emplace_back(
                 textureId,
@@ -110,27 +114,28 @@ void TextRenderer::loadText(const std::wstring &text) {
 }
 
 void TextRenderer::onDraw() {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     renderText(25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
 }
 
 void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
-//    shader.use();
     shader.setVec3("textColor", color);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(surfaceWidth), 0.0f, static_cast<float>(surfaceHeight));
+
+//    glm::mat4 projection = glm::perspective(45.0f, static_cast<float>(surfaceWidth)/static_cast<float>(surfaceHeight), 0.1f, 100.0f);
+
     shader.setMat4("projection", projection);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
-    for (auto iter = characters.begin(); iter != characters.end(); ++iter) {
-        Character c = *iter;
+    std::for_each(characters.begin(), characters.end(), [&](Character c) {
         // 字体框左下角
         GLfloat left = x + c.bearing.x * scale;
         GLfloat bottom = y - (c.size.y - c.bearing.y) * scale;
         GLfloat right = c.size.x * scale + left;
         GLfloat top = c.size.y * scale + bottom;
 //        LOGE(TAG, "left %f  top %f  right %f  bottom %f", left, top, right, bottom);
-        float vertices[] = {
+        GLfloat vertices[] = {
                 left, top, 0.0f, 0.0f,
                 left, bottom, 0.0f, 1.0f,
                 right, bottom, 1.0f, 1.0f,
@@ -147,14 +152,14 @@ void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 col
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // advance的值是1/64像素
         x += (c.advance >> 6) * scale;
-    }
+    });
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 TextRenderer::~TextRenderer() {
-//    glDeleteBuffers(1, &VBO);
-//    glDeleteVertexArrays(0, &VAO);
-//    shader.release();
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(0, &VAO);
+    shader.release();
 }
 

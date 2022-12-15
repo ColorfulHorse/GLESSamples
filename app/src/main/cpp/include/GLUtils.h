@@ -29,7 +29,10 @@ public:
 
     static GLuint loadCubeMap(std::vector<std::string> faces);
 
+    static GLuint
+    loadMemoryTexture(int width, int height, int channels, unsigned char *data, GLint repeatMode = -1, bool gamma = false);
 
+private:
     static GLuint
     loadTexture(const char *path,
                 int width, int height, int channels, stbi_uc *data, GLint repeatMode = -1, bool gamma = false);

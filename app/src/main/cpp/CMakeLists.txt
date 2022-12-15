@@ -9,14 +9,12 @@ set(CXX_STANDARD 11)
 
 project("glsample")
 
-set(LIBS_DIR "${CMAKE_SOURCE_DIR}/../jniLibs")
+set(LIBS_DIR "${CMAKE_SOURCE_DIR}/libs")
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SRC_LIST "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*.c")
 file(GLOB_RECURSE INCLUDE_LIST "${PROJECT_SOURCE_DIR}/include/*.h" "${PROJECT_SOURCE_DIR}/include/*.hpp")
-
-link_directories(${PROJECT_SOURCE_DIR}/libs)
 
 add_library(
         glsample

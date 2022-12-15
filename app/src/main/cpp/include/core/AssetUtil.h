@@ -24,7 +24,7 @@ public:
         uint32_t num = AAsset_read(asset, buffer, len);
         AAsset_close(asset);
         if (num != len) {
-            LOGE("AssetUtil", "loadTextAsset read error");
+            LOGE("AssetUtil", "loadTextAsset read error num %d len %ld", num, len);
             delete[] buffer;
             return nullptr;
         }

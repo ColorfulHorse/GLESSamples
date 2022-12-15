@@ -35,7 +35,7 @@ private:
     FT_Face ftFace;
     std::vector<Character> characters;
 
-    void loadText(const std::wstring &text);
+    void loadText(const std::u32string &text);
 
     void renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 };

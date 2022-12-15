@@ -10,6 +10,10 @@ import android.content.res.AssetManager
  */
 object RenderContext {
 
+    init {
+        System.loadLibrary("glsample")
+    }
+
     @JvmStatic
     fun initialize(context: Context) {
         setAssetManager(context.resources.assets)
