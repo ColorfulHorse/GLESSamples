@@ -12,7 +12,7 @@ import java.util.Properties
 
 class RenderFragment : Fragment() {
 
-    val viewBinding by viewBinding<FragmentRenderBinding>()
+    private val viewBinding by viewBinding<FragmentRenderBinding>()
 
     private var renderer: BaseRenderer? = null
 

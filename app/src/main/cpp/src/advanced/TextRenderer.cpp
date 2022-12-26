@@ -94,8 +94,7 @@ void TextRenderer::loadText(const std::u32string &text) {
 //            }
 //            LOGI(TAG, "%s", ss.str().c_str());
 //        }
-//        int ww, hh;
-//        GLuint textureId = GLUtils::loadAssetsTexture("texture/window.png", &ww, &hh, -1, true);
+
         uint width = ftFace->glyph->bitmap.width;
         uint height = ftFace->glyph->bitmap.rows;
         GLuint textureId = GLUtils::loadMemoryTexture(
@@ -121,6 +120,7 @@ void TextRenderer::onDraw() {
 
 void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
     shader.setVec3("textColor", color);
+
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(surfaceWidth), 0.0f, static_cast<float>(surfaceHeight));
 
 //    glm::mat4 projection = glm::perspective(45.0f, static_cast<float>(surfaceWidth)/static_cast<float>(surfaceHeight), 0.1f, 100.0f);
@@ -134,7 +134,7 @@ void TextRenderer::renderText(GLfloat x, GLfloat y, GLfloat scale, glm::vec3 col
         GLfloat bottom = y - (c.size.y - c.bearing.y) * scale;
         GLfloat right = c.size.x * scale + left;
         GLfloat top = c.size.y * scale + bottom;
-//        LOGE(TAG, "left %f  top %f  right %f  bottom %f", left, top, right, bottom);
+        // 因为
         GLfloat vertices[] = {
                 left, top, 0.0f, 0.0f,
                 left, bottom, 0.0f, 1.0f,
