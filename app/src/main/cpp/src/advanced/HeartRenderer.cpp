@@ -7,7 +7,7 @@
 #include "core/advanced/HeartRenderer.h"
 
 void HeartRenderer::onSurfaceCreated() {
-    shader = Shader("shader/heart/heart.vert", "shader/heart/heart.frag");
+    shader = Shader("shader/heart/heart.vert", "shader/heart/shape.frag");
 
     float vertices[] = {
             -1.0f, -1.0f,

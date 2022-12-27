@@ -50,6 +50,7 @@ void main() {
     // t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
     // smoothstep(edge0, edge1, x) = (3.0 - 2.0 * t) * t * t;
 //    vec3 col = r < d ? hcol : bgColor;
+    // t[0,1]过渡，(1-t)*bgColor + t*hcol
     vec3 col = mix(bgColor, hcol, smoothstep(-0.01, 0.01, d - r));
     fragColor = vec4(col, 1.0);
 }
